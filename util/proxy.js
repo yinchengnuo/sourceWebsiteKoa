@@ -1,4 +1,5 @@
 const axios = require('axios');
+const router = require('koa-router')();
 
 const host = 'https://api.96friend.cn';
 const query1 = 'apptype=6';
@@ -7,7 +8,8 @@ const query3 = 'type=1'
 const query4 = 'pagesize=14'
 const query5 = 'cversion=29011505'
 
-module.exports = (router) => {
+module.exports = (app) => {
+
     router.get('/tuijian', async ctx => {
         ctx.body = (await axios(`${host}/videoLive!getRecommendList.htm?${query1}&${query2}&${query3}&${query4}&${query5}&pageno=${ctx.query.page}&_timestamp=${Math.floor(+new Date() / 1000)}`)).data
     })
@@ -35,4 +37,6 @@ module.exports = (router) => {
     router.get('/videochatlist', async ctx => {
         ctx.body = (await axios(`${host}/videoPair!getSingleVideoPairListV2Soft.htm?${query1}&${query2}&${query3}&${query4}&${query5}&pageno=${ctx.query.page}&_timestamp=${Math.floor(+new Date() / 1000)}`)).data
     })
+
+    app.use(router.routes()).use(router.allowedMethods());
 }

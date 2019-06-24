@@ -15,8 +15,8 @@ module.exports = (subject, html) => {
         to: 'yinnuo96@163.com',
         subject,
         html
-    }, function(error){
-        if(error)
+    }, function(error) {
+        if (error)
             console.log(error)
     })
 }
