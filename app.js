@@ -1,11 +1,7 @@
 const Koa = require('koa');
-const connectMongodb = require('./util/connectMongodb')
-    // const static = require('koa-static');
 const compress = require('koa-compress');
 const bodyParser = require('koa-bodyparser');
-
-// const router = require('./core/router');
-// const routes = require('./core/routes');
+const connectMongodb = require('./util/connectMongodb');
 
 (async() => {
     try {
@@ -23,6 +19,7 @@ const bodyParser = require('koa-bodyparser');
 
     require('./util/proxy')(app); //代理接口
     require('./resumeIndexJquery/app')(app); //主页简历
+    require('./fuliaoLiveAuditRecord/app')(app); //富聊直播审核记录
     // app.use(router.routes()).use(router.allowedMethods())
 
     // routes.forEach((item) => {

@@ -30,7 +30,7 @@
         .content {
             margin-bottom: 20px;
         }
-
+        
         .el-pagination {
             text-align: center;
         }
@@ -145,12 +145,7 @@
 </head>
 
 <body>
-    <div id="app"
-    v-loading="loading"
-    element-loading-text="拼命加载中"
-    element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(0, 0, 0, 0.8)"
-    >
+    <div id="app" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
         <el-menu class="el-menu-demo" mode="horizontal">
             <el-submenu index="1">
                 <template slot="title">{{choosed}}</template>
@@ -194,19 +189,17 @@
             </div>
 
         </div>
-        <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :page-sizes="[50, 100, 150, 200]"
-        :page-size="pagesize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="data.length">
-      </el-pagination>
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[50, 100, 150, 200]" :page-size="pagesize" layout="total, sizes, prev, pager, next, jumper" :total="total">
+        </el-pagination>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script>
+        Vue.prototype.$http = axios.create({
+            baseURL: '/fuliaoLiveAuditRecord',
+            timeout: 1234
+        })
         new Vue({
             el: '#app',
             data: {
@@ -231,7 +224,8 @@
 
                 loading: true,
                 pagesize: 50,
-                nowpage: 1 
+                pagenow: 1,
+                total: 0
             },
             methods: {
                 showhide(index) {
@@ -245,41 +239,41 @@
                     this.sizepageChange()
                 },
                 handleCurrentChange(val) {
-                    this.nowpage = +val
+                    this.pagenow = +val
                     this.sizepageChange()
                 },
                 subbmit() {
-                    this.loading = true;
-                    const that = this;
-                    axios.get('/fuliaoLiveAuditRecord/search', {
-                        params: {
-                            name: that.value,
-                            start: new Date(that.timevalue[0]).getTime(),
-                            end: new Date(that.timevalue[1]).getTime(),
-                        }
-                    }).then((response) => {
-                        that.loading = false;
-                        if (that.input.trim()) {
-                            const data = [];
-                            that.data.forEach((i) => {
-                                i.userinfo.forEach((j) => {
-                                    if (j.userid == that.input.trim()) {
-                                        data.push(i)
-                                    }
-                                })
-                            });
-                            that.data = data;
-                            that.computeData()  
-                            that.sizepageChange()
-                        } else {
-                            that.data = response.data;
-                            that.computeData()  
-                            that.sizepageChange()
-                        }
-                        if (that.data.length) {
-                            that.computeData()
-                        }
-                    });
+                    // this.loading = true;
+                    // const that = this;
+                    // this.$http.post('/fuliaoLiveAuditRecord/search', {
+                    //     params: {
+                    //         name: that.value,
+                    //         start: new Date(that.timevalue[0]).getTime(),
+                    //         end: new Date(that.timevalue[1]).getTime(),
+                    //     }
+                    // }).then((response) => {
+                    //     that.loading = false;
+                    //     if (that.input.trim()) {
+                    //         const data = [];
+                    //         that.data.forEach((i) => {
+                    //             i.userinfo.forEach((j) => {
+                    //                 if (j.userid == that.input.trim()) {
+                    //                     data.push(i)
+                    //                 }
+                    //             })
+                    //         });
+                    //         that.data = data;
+                    //         that.computeData()
+                    //         that.sizepageChange()
+                    //     } else {
+                    //         that.data = response.data;
+                    //         that.computeData()
+                    //         that.sizepageChange()
+                    //     }
+                    //     if (that.data.length) {
+                    //         that.computeData()
+                    //     }
+                    // });
                 },
                 choose(value) {
                     this.choosed = value;
@@ -290,7 +284,7 @@
                         this.timevalue = [new Date(2019, 2, 1), new Date()]
                     }
                 },
-                computeData () {
+                computeData() {
                     let totle = 0;
                     let keeptime = [];
                     let totlekeeptime = 0;
@@ -309,28 +303,22 @@
                     this.totle = totle;
                     this.midtime = Math.floor(totlekeeptime / this.data.length);
                 },
-                sizepageChange () {
-                    this.loading = true
-                    setTimeout(() => {
-                        this.loading = false
-                    }, 123)
-                    this.showList = this.data.slice(this.pagesize * ((this.nowpage - 1) > 0 ? this.nowpage - 1 : 0), this.pagesize * this.nowpage)
+                search(params) {
+                    this.$http.post('/search', params).then((response) => {
+                        this.loading = false;
+                        this.data = response.data
+                        this.computeData()
+                    });
                 }
             },
             mounted() {
-                let that = this;
-                axios.get('/fuliaoLiveAuditRecord/search', {
-                    params: {
-                        name: '请选择',
-                        start: new Date(that.timevalue[0]).getTime(),
-                        end: new Date(that.timevalue[1]).getTime(),
-                    }
-                }).then((response) => {
-                    that.loading = false;
-                    that.data = response.data
-                    that.showList = that.data.slice(0, 50);
-                    that.computeData()
-                });
+                this.search({
+                    name: '请选择',
+                    start: new Date(this.timevalue[0]).getTime(),
+                    end: new Date(this.timevalue[1]).getTime(),
+                    pagesize: this.pagesize,
+                    pagenow: this.pagenow
+                })
             }
         });
     </script>
