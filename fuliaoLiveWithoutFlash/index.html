@@ -85,7 +85,7 @@
                 list: []
             },
             created () {
-                axios.get(`http://yinchengnuo.com/tuijian?page=${this.page}`).then((res) => {
+                axios.get(`/tuijian?page=${this.page}`).then((res) => {
                     this.list = res.data.info.slice(0, 13)
                     this.page ++ 
                 })
@@ -114,7 +114,7 @@
                     }
                 },
                 greet () {
-                    axios.get(`http://yinchengnuo.com/tuijian?page=${this.page}`).then((res) => {
+                    axios.get(`/tuijian?page=${this.page}`).then((res) => {
                         this.list = res.data.info.slice(0, 13)
                         this.rander()
                         this.page ++
