@@ -20,11 +20,8 @@ const connectMongodb = require('./util/connectMongodb');
     require('./util/proxy')(app); //代理接口
     require('./resumeIndexJquery/app')(app); //主页简历
     require('./fuliaoLiveAuditRecord/app')(app); //富聊直播审核记录
-    // app.use(router.routes()).use(router.allowedMethods())
-
-    // routes.forEach((item) => {
-    //     item.staticPath ? app.use(static(item.staticPath)) : ''
-    // })
+    require('./fuliaoLiveWithoutFlash/app')(app); //富聊后台视频聊优化建议方案
+    require('./fuliaoVideochatAuditRecord/app')(app); //富聊视频聊复查快捷工具
     app.listen(80);
     console.log('服务器创建成功！！！')
 })()

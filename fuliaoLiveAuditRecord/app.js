@@ -11,15 +11,33 @@ module.exports = (app) => {
     })
 
     router.post('/search', async ctx => {
-        console.log(ctx.request.body)
+        const { name, start, end, pagesize, pagenow, search } = ctx.request.body;
         const query = {
             $and: [
-                { time: { $gte: +ctx.request.body.start } },
-                { time: { $lte: +ctx.request.body.end } }
+                { time: { $gte: +start } },
+                { time: { $lte: +end } }
             ]
         }
-        ctx.request.body.name !== '请选择' ? query.name = ctx.request.body.name : '';
-        ctx.body = await fuliaoLiveAuditRecord.find(query)
+        name ? query.name = name : '';
+        let data = await fuliaoLiveAuditRecord.find(query).sort({ time: -1 }).skip((pagenow - 1) * pagesize).limit(pagesize);
+        let refreshtime = await fuliaoLiveAuditRecord.find(query).countDocuments();
+        if (search) {
+            const temp = []
+            let innerData = await fuliaoLiveAuditRecord.find(query).sort({ time: -1 })
+            innerData.forEach((e, i) => {
+                JSON.parse(JSON.stringify(e)).userinfo.forEach(e => {
+                    if (e.userid == search) {
+                        temp.push(innerData[i])
+                    }
+                })
+            })
+            data = temp.length ? temp.slice((pagenow - 1) * pagesize, (pagenow - 1) * pagesize + pagesize) : ''
+            refreshtime = data.length
+        }
+        ctx.body = {
+            data,
+            refreshtime
+        }
     })
 
     app.use(router.routes()).use(router.allowedMethods());

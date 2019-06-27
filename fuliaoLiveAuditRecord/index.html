@@ -151,11 +151,6 @@
                 <template slot="title">{{choosed}}</template>
                 <el-menu-item v-for="(value, key, index) in users" :key="index" @click="choose(value)">{{value}}</el-menu-item>
             </el-submenu>
-            <el-menu-item index="2">审核量：{{totle}}个用户</el-menu-item>
-            <el-menu-item index="3">提交次数：{{refreshtimes}}次</el-menu-item>
-            <el-menu-item index="4">平均提交时长：{{midtime}}秒</el-menu-item>
-            <el-menu-item index="5">最小提交时长：{{mintime}}秒</el-menu-item>
-            <el-menu-item index="6">最大提交时长：{{maxtime}}秒</el-menu-item>
             <button class="button" @click="subbmit">搜索审核记录</button>
             <el-input v-model="input" class="input" placeholder="请输入用户ID"></el-input>
             <div class="block">
@@ -165,7 +160,7 @@
         </el-menu>
 
         <div class="content">
-            <div class="list" v-for="(item, index) in showList" :key="index">
+            <div class="list" v-for="(item, index) in data" :key="index">
                 操作人：<span>{{item.name}}</span> 操作行为：
                 <span>{{item.action == 'change' ? '换一批' : '关&nbsp;&nbsp;&nbsp;闭'}}</span> 页面停留时长：
                 <span>{{item.keeptime}}秒</span> 操作时间：
@@ -189,7 +184,7 @@
             </div>
 
         </div>
-        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[50, 100, 150, 200]" :page-size="pagesize" layout="total, sizes, prev, pager, next, jumper" :total="total">
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[50, 100, 150, 200]" :page-size="pagesize" layout="total, sizes, prev, pager, next, jumper" :total="refreshtime">
         </el-pagination>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -203,24 +198,21 @@
         new Vue({
             el: '#app',
             data: {
-                data: [],
                 showList: [],
                 users: {
                     "yinchengnuo": "尹成诺",
                     "chenlin": "陈林",
                     "shaowanqian": "邵万钱",
+                    "zhangtao": "张涛"
                 },
                 show: -1,
                 choosed: '请选择',
-                timevalue: [new Date(1552002768382), new Date(1552089512938)],
-                value: '请选择',
+                timevalue: [new Date(1552002396339), new Date(1552913415163)],
+                value: '',
                 input: '',
 
-                totle: 0,
-                refreshtimes: 0,
-                maxtime: 0,
-                midtime: 0,
-                mintime: 0,
+                data: [],
+                refreshtime: 0,
 
                 loading: true,
                 pagesize: 50,
@@ -236,44 +228,45 @@
                 },
                 handleSizeChange(val) {
                     this.pagesize = +val
-                    this.sizepageChange()
+                    this.search()
                 },
                 handleCurrentChange(val) {
                     this.pagenow = +val
-                    this.sizepageChange()
+                    this.search()
                 },
                 subbmit() {
-                    // this.loading = true;
-                    // const that = this;
-                    // this.$http.post('/fuliaoLiveAuditRecord/search', {
-                    //     params: {
-                    //         name: that.value,
-                    //         start: new Date(that.timevalue[0]).getTime(),
-                    //         end: new Date(that.timevalue[1]).getTime(),
-                    //     }
-                    // }).then((response) => {
-                    //     that.loading = false;
-                    //     if (that.input.trim()) {
-                    //         const data = [];
-                    //         that.data.forEach((i) => {
-                    //             i.userinfo.forEach((j) => {
-                    //                 if (j.userid == that.input.trim()) {
-                    //                     data.push(i)
-                    //                 }
-                    //             })
-                    //         });
-                    //         that.data = data;
-                    //         that.computeData()
-                    //         that.sizepageChange()
-                    //     } else {
-                    //         that.data = response.data;
-                    //         that.computeData()
-                    //         that.sizepageChange()
-                    //     }
-                    //     if (that.data.length) {
-                    //         that.computeData()
-                    //     }
-                    // });
+                    this.search(this.input.trim());
+                    this.loading = true;
+                    const that = this;
+                    this.$http.post('/fuliaoLiveAuditRecord/search', {
+                        params: {
+                            name: that.value,
+                            start: new Date(that.timevalue[0]).getTime(),
+                            end: new Date(that.timevalue[1]).getTime(),
+                        }
+                    }).then((response) => {
+                        that.loading = false;
+                        if (that.input.trim()) {
+                            const data = [];
+                            that.data.forEach((i) => {
+                                i.userinfo.forEach((j) => {
+                                    if (j.userid == that.input.trim()) {
+                                        data.push(i)
+                                    }
+                                })
+                            });
+                            that.data = data;
+                            that.computeData()
+                            that.sizepageChange()
+                        } else {
+                            that.data = response.data;
+                            that.computeData()
+                            that.sizepageChange()
+                        }
+                        if (that.data.length) {
+                            that.computeData()
+                        }
+                    });
                 },
                 choose(value) {
                     this.choosed = value;
@@ -284,41 +277,23 @@
                         this.timevalue = [new Date(2019, 2, 1), new Date()]
                     }
                 },
-                computeData() {
-                    let totle = 0;
-                    let keeptime = [];
-                    let totlekeeptime = 0;
-                    const data = [...this.data]
-                    data.forEach(e => {
-                        totlekeeptime += +e.keeptime;
-                        keeptime.push(+e.keeptime);
-                        totle += Object.keys(e.userinfo).length;
-                    });
-                    keeptime.sort((a, b) => {
-                        return a - b;
-                    });
-                    this.refreshtimes = data.length
-                    this.mintime = keeptime[0];
-                    this.maxtime = keeptime[keeptime.length - 1]
-                    this.totle = totle;
-                    this.midtime = Math.floor(totlekeeptime / this.data.length);
-                },
-                search(params) {
-                    this.$http.post('/search', params).then((response) => {
+                search() {
+                    this.$http.post('/search', {
+                        name: this.value,
+                        search: this.input.trim(),
+                        start: new Date(this.timevalue[0]).getTime(),
+                        end: new Date(this.timevalue[1]).getTime(),
+                        pagesize: this.pagesize,
+                        pagenow: this.pagenow
+                    }).then((response) => {
                         this.loading = false;
-                        this.data = response.data
-                        this.computeData()
+                        this.data = response.data.data,
+                        this.refreshtime = response.data.refreshtime
                     });
                 }
             },
             mounted() {
-                this.search({
-                    name: '请选择',
-                    start: new Date(this.timevalue[0]).getTime(),
-                    end: new Date(this.timevalue[1]).getTime(),
-                    pagesize: this.pagesize,
-                    pagenow: this.pagenow
-                })
+                this.search()
             }
         });
     </script>
