@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>api测试页面</title>
+    <style>
+        video {
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <video id="video" width="200" controls autoplay muted></video>
+    <video id="videoElement" width="200" controls autoplay muted></video>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://cdn.bootcss.com/flv.js/1.5.0/flv.min.js"></script>
+    <script>
+        "rtmp://pili-live-rtmp.hzwangjiao.com/fuliao-live/271518808"
+        var hls = new Hls({
+            liveSyncDurationCount: 0,
+            liveSyncDuration: 1,
+            liveDurationInfinity: true,
+            maxStarvationDelay: 0,
+            maxLoadingDelay: 0,
+            // capLevelToPlayerSize: true
+        });
+        hls.loadSource('http://pili-live-rtmp.hzwangjiao.com/fuliao-live/271518808.m3u8');
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, function() {
+            video.play();
+        });
+        setTimeout(() => {
+            console.log(hls.autoLevelCapping)
+        }, 2333)
+    </script>
+    <script>
+        var videoElement = document.getElementById('videoElement');
+        var flvPlayer = flvjs.createPlayer({
+            type: 'flv',
+            url: 'http://pili-live-rtmp.hzwangjiao.com/fuliao-live/271518808.flv'
+        });
+        flvPlayer.attachMediaElement(videoElement);
+        flvPlayer.load();
+        flvPlayer.play();
+    </script>
+</body>
+
+</html>

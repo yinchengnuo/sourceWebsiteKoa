@@ -1,2 +1,6 @@
-# personal-website-source-code
-# source-website-koa
+# 网站源码
+## 使用koa开发，全面使用es6+语法
+### 根目录里，除了util（主要放了一些工具方法）文件夹，其余的每一个文件夹都是一个路由，放的平时做的项目，一个路由就是一个小项目
+#### 每一个小项目内，静态资源都放在assets文件夹内，如果有数据库操作那么操作数据库的模型就放在dbs目录。app.js负责静态资源分发，和项目内路由及接口处理。每个app.js都是一个只接收一个koa实例的函数，函数在根目录的app.js被调用表示项目启动。
+##### 数据库用的MongoDB+Redis， 使用mongoose和koa-redis操作数据库。
+###### 启动项目 ？ cd sourceWebsiteKoa => node ./app,js : ''

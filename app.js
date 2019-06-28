@@ -23,6 +23,7 @@ const connectMongodb = require('./util/connectMongodb');
     require('./fuliaoLiveWithoutFlash/app')(app); //富聊后台视频聊优化建议方案
     require('./fuliaoVideochatAuditRecord/app')(app); //富聊视频聊复查快捷工具
     require('./fuliaoWebappVue/app')(app); //富聊webapp移动端Vue开发版
+    require('./test/app')(app); //测试页面
 
     app.listen(80);
     console.log('服务器创建成功！！！')
