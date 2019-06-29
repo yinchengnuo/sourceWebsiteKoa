@@ -28,7 +28,7 @@
             maxLoadingDelay: 0,
             // capLevelToPlayerSize: true
         });
-        hls.loadSource('http://pili-live-rtmp.hzwangjiao.com/fuliao-live/271518808.m3u8');
+        hls.loadSource('http://pili-live-rtmp.hzwangjiao.com/fuliao-live/271600659.m3u8');
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, function() {
             video.play();
@@ -41,7 +41,7 @@
         var videoElement = document.getElementById('videoElement');
         var flvPlayer = flvjs.createPlayer({
             type: 'flv',
-            url: 'http://pili-live-rtmp.hzwangjiao.com/fuliao-live/271518808.flv'
+            url: 'http://pili-live-rtmp.hzwangjiao.com/fuliao-live/271600659.flv'
         });
         flvPlayer.attachMediaElement(videoElement);
         flvPlayer.load();

@@ -4,13 +4,13 @@ const bodyParser = require('koa-bodyparser');
 const connectMongodb = require('./util/connectMongodb');
 
 (async() => {
-    try {
-        await connectMongodb
-    } catch {
-        console.log('数据库连接失败！！')
-        return
-    }
-    console.log('数据库连接成功！！！')
+    // try {
+    //     await connectMongodb
+    // } catch {
+    //     console.log('数据库连接失败！！')
+    //     return
+    // }
+    // console.log('数据库连接成功！！！')
 
     const app = new Koa();
 
