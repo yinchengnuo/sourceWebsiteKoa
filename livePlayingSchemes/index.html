@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>富聊直播</title>
+    <link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        html,
+        body {
+            height: 100%;
+        }
+        
+        .title {
+            text-align: center;
+            border-bottom: .5vw solid orangered;
+        }
+        
+        .video-area,
+        .video-des {
+            height: 370px;
+            border-bottom: .5vw solid orangered;
+        }
+        
+        .video-des {
+            height: 220px;
+        }
+        
+        .video-des {}
+        
+        .video-area-item,
+        .video-des-item {
+            float: left;
+            width: 33vw;
+        }
+        
+        .video-area-flash,
+        .video-area-hls,
+        .video-des-flash,
+        .video-des-hls {
+            border-right: .5vw solid orangered;
+        }
+        
+        .video {
+            float: left;
+            width: 11vw;
+        }
+        
+        h2,
+        p {
+            text-align: center;
+        }
+        
+        h2 {
+            height: 50px;
+            line-height: 50px;
+        }
+        
+        p {
+            line-height: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <h1 class="title">web前端常用直播流播放方案（PC端）</div>
+    <div class="video-area">
+        <div class="video-area-item video-area-flash">
+            <div id="flash0" class="video"></div>
+            <div id="flash1" class="video"></div>
+            <div id="flash2" class="video"></div>
+        </div>
+        <div class="video-area-item video-area-hls">
+            <video id="hls0" class="video" controls muted autoplay></video>
+            <video id="hls1" class="video" controls muted autoplay></video>
+            <video id="hls2" class="video" controls muted autoplay></video>
+        </div>
+        <div class="video-area-item video-area-flv">
+            <video id="flv0" class="video" controls muted autoplay></video>
+            <video id="flv1" class="video" controls muted autoplay></video>
+            <video id="flv2" class="video" controls muted autoplay></video>
+        </div>
+    </div>
+    <div class="video-des">
+        <div class="video-des-item video-des-flash">
+            <h2>视频流协议：rtmp/播放容器：flash</h2>
+            <br>
+            <p>优点：历史悠久，技术成熟，类库众多，开发成本较低，延时低（1s~3s）。</p>
+            <br>
+            <p>缺点：多数浏览器不兼容，运行时崩溃，卡顿。</p>
+            <br>
+            <p>当前使用库：h5connect.js</p>
+            <br>
+        </div>
+        <div class="video-des-item video-des-hls">
+            <h2>视频流协议：hls/播放容器：H5-video</h2>
+            <br>
+            <p>优点：兼容大多数浏览器，音频数据分段传输，速度快, 流畅。</p>
+            <br>
+            <p>缺点：播放过程中需要频繁建立http(s)短链接，延迟严重（5s~20s）</p>
+            <br>
+            <p>当前使用库：hls.js</p>
+            <br>
+        </div>
+        <div class="video-des-item video-des-flv">
+            <h2>视频流协议：http-flv/播放容器：H5-video</h2>
+            <br>
+            <p>优点：基于http(s)长链接，延时低（1s~3s），且兼容大多数浏览器</p>
+            <br>
+            <p>缺点：受浏览器同域名请求的最大并发数限制，单个浏览器只能打开(6~12)个直播流窗。</p>
+            <p>火狐浏览器可以修改最大同源并发数，但是修改后直播播放会出现频繁的播放暂停切换。</p>
+            <p>当前使用库：flv.js</p>
+            <br>
+        </div>
+    </div>
+    </div>
+    <script src="http://qzonestyle.gtimg.cn/open/qcloud/video/live/h5/live_connect.js" charset="utf-8"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://cdn.bootcss.com/flv.js/1.5.0/flv.min.js"></script>
+    <script src="https://cdn.bootcss.com/axios/0.19.0-beta.1/axios.min.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.min.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                page: 1,
+                list: []
+            },
+            created() {
+
+            },
+            mounted() {
+                axios.get(`/tuijian?page=${this.page}`).then((res) => {
+                    this.list = res.data.info.slice(3, 6)
+                    this.page++
+                        this.rander()
+                })
+                document.getElementsByClassName('toggle')[0].onclick = () => {
+                    this.toggle()
+                }
+            },
+            methods: {
+                rander() {
+                    for (let i = 0; i < this.list.length; i++) {
+                        ((i, url) => {
+
+                            var player = new qcVideo.Player(`flash${i}`, {
+                                "width": 210.66,
+                                "height": 370,
+                                "live_url": url,
+                                "volume": 0
+                            });
+
+                            const hlsUrl = url.replace('rtmp', 'http') + '.m3u8';
+                            const hlsVidoe = document.getElementById(`hls${i}`);
+                            const hls = new Hls({
+                                capLevelToPlayerSize: true,
+                                liveDurationInfinity: true
+                            });
+                            hls.loadSource(hlsUrl);
+                            hls.attachMedia(hlsVidoe);
+                            hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                                video.play();
+                            });
+
+                            const flvUrl = url.replace('rtmp', 'http') + '.flv';
+                            const flvVideo = document.getElementById(`flv${i}`);
+                            const flv = flvjs.createPlayer({
+                                type: 'flv',
+                                url: flvUrl,
+                                isLive: true,
+                            });
+                            flv.attachMediaElement(flvVideo);
+                            flv.load();
+                            flv.play();
+                        })(i, this.list[i].pullUrl)
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
