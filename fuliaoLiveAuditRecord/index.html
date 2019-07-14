@@ -1,197 +1,4 @@
-<!DOCTYPE html>
-<html lang="zh">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>富聊直播流审核记录</title>
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            list-style: none;
-            color: gray;
-            text-decoration: none;
-        }
-        
-        html,
-        body {
-            width: 100%;
-            height: 100%;
-        }
-        
-        #app {
-            width: 100%;
-            height: 100%;
-        }
-        
-        .content {
-            margin-bottom: 20px;
-        }
-        
-        .el-pagination {
-            text-align: center;
-        }
-        
-        .list {
-            width: 20%;
-            border: 1px solid black;
-            box-sizing: border-box;
-            padding: 8px;
-            border-radius: 8px;
-            line-height: 20px;
-            display: inline-block;
-            font-size: 12px;
-            position: relative;
-        }
-        
-        .list span {
-            color: #f40;
-            font-size: 12px;
-            font-weight: bold;
-            margin: 10px;
-        }
-        
-        .list .click {
-            font-size: 20px;
-            color: #aaa;
-            cursor: pointer;
-            border: 1px solid black;
-            border-radius: 50%;
-            position: absolute;
-            right: 0;
-            bottom: -12px;
-        }
-        
-        .hide {
-            width: 100%;
-            border: 1px solid black;
-            position: absolute;
-            left: 0;
-            z-index: 1;
-            background-color: whitesmoke;
-            border: 1px solid black;
-            box-sizing: border-box;
-            border-radius: 8px;
-            line-height: 20px;
-            -webkit-column-count: 3;
-            text-align: center;
-        }
-        
-        .userinfo {
-            color: blue;
-        }
-        
-        .input {
-            float: right;
-            width: 10vw;
-            height: 60px;
-            font-size: 25px;
-            font-weight: bold;
-            padding: 0;
-            color: green;
-        }
-        
-        .input>input {
-            height: 60px !important;
-        }
-        
-        .block {
-            float: right;
-            height: 60px;
-            line-height: 60px;
-            width: 20vw;
-        }
-        
-        .block span {
-            height: 60px;
-            line-height: 50px !important;
-        }
-        
-        .button {
-            height: 60px;
-            float: right;
-            width: 10vw;
-            box-sizing: border-box;
-            font-size: 30px;
-            line-height: 60px;
-        }
-        
-        .searchid {
-            color: red;
-            font-weight: blod;
-        }
-        
-         ::-webkit-scrollbar {
-            width: 16px;
-            height: 16px;
-            background-color: #F5F5F5;
-        }
-        
-         ::-webkit-scrollbar-track {
-            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            background-color: rgb(142, 196, 43);
-        }
-        
-         ::-webkit-scrollbar-thumb {
-            border-radius: 8px;
-            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
-            background-color: rgb(231, 62, 62);
-        }
-    </style>
-</head>
-
-<body>
-    <div id="app" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-        <el-menu class="el-menu-demo" mode="horizontal">
-            <el-submenu index="1">
-                <template slot="title">{{choosed}}</template>
-                <el-menu-item v-for="(value, key, index) in users" :key="index" @click="choose(value)">{{value}}</el-menu-item>
-            </el-submenu>
-            <button class="button" @click="subbmit">搜索审核记录</button>
-            <el-input v-model="input" class="input" placeholder="请输入用户ID"></el-input>
-            <div class="block">
-                <el-date-picker class="block" @blur="blur" v-model="timevalue" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
-                </el-date-picker>
-            </div>
-        </el-menu>
-
-        <div class="content">
-            <div class="list" v-for="(item, index) in data" :key="index">
-                操作人：<span>{{item.name}}</span> 操作行为：
-                <span>{{item.action == 'change' ? '换一批' : '关&nbsp;&nbsp;&nbsp;闭'}}</span> 页面停留时长：
-                <span>{{item.keeptime}}秒</span> 操作时间：
-                <span>{{new Date(Number(item.time)).toLocaleString() }}</span> 提交用户数量：
-                <span>{{item.userinfo.length}}</span>
-                <span @mouseenter="showhide(index)" @mouseleave="hide()" class="click">▼</span>
-                <div v-if="show == index" @mouseenter="show = index" @mouseleave="show = -1" class="hide">
-                    <div>
-                        <div>用户名</div>
-                        <div class="userinfo" v-for="(item, index) in item.userinfo" :key="index" :class="input.trim() == item.userid ? 'searchid' : ''">{{item.username}}</div>
-                    </div>
-                    <div>
-                        <div>用户ID</div>
-                        <div class="userinfo" v-for="(item, index) in item.userinfo" :key="index" :class="input.trim() == item.userid ? 'searchid' : ''">{{item.userid}}</div>
-                    </div>
-                    <div>
-                        <div>处罚记录</div>
-                        <div class="userinfo" v-for="(item, index) in item.userinfo" :key="index">暂未开发</div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[50, 100, 150, 200]" :page-size="pagesize" layout="total, sizes, prev, pager, next, jumper" :total="refreshtime">
-        </el-pagination>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-    <script>
-        Vue.prototype.$http = axios.create({
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="X-UA-Compatible" content="ie=edge"><title>富聊直播流审核记录</title><link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"><style>*{margin:0;padding:0;list-style:none;color:gray;text-decoration:none}body,html{width:100%;height:100%}#app{width:100%;height:100%}.content{margin-bottom:20px}.el-pagination{text-align:center}.list{width:20%;border:1px solid #000;box-sizing:border-box;padding:8px;border-radius:8px;line-height:20px;display:inline-block;font-size:12px;position:relative}.list span{color:#f40;font-size:12px;font-weight:700;margin:10px}.list .click{font-size:20px;color:#aaa;cursor:pointer;border:1px solid #000;border-radius:50%;position:absolute;right:0;bottom:-12px}.hide{width:100%;border:1px solid #000;position:absolute;left:0;z-index:1;background-color:#f5f5f5;border:1px solid #000;box-sizing:border-box;border-radius:8px;line-height:20px;-webkit-column-count:3;text-align:center}.userinfo{color:#00f}.input{float:right;width:10vw;height:60px;font-size:25px;font-weight:700;padding:0;color:green}.input>input{height:60px!important}.block{float:right;height:60px;line-height:60px;width:20vw}.block span{height:60px;line-height:50px!important}.button{height:60px;float:right;width:10vw;box-sizing:border-box;font-size:30px;line-height:60px}.searchid{color:red;font-weight:blod}::-webkit-scrollbar{width:16px;height:16px;background-color:#f5f5f5}::-webkit-scrollbar-track{-webkit-box-shadow:inset 0 0 6px rgba(0,0,0,.3);border-radius:10px;background-color:#8ec42b}::-webkit-scrollbar-thumb{border-radius:8px;-webkit-box-shadow:inset 0 0 6px rgba(0,0,0,.3);background-color:#e73e3e}</style></head><body><div id="app" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)"><el-menu class="el-menu-demo" mode="horizontal"><el-submenu index="1"><template slot="title">{{choosed}}</template><el-menu-item v-for="(value, key, index) in users" :key="index" @click="choose(value)">{{value}}</el-menu-item></el-submenu><button class="button" @click="subbmit">搜索审核记录</button><el-input v-model="input" class="input" placeholder="请输入用户ID"></el-input><div class="block"><el-date-picker class="block" @blur="blur" v-model="timevalue" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker></div></el-menu><div class="content"><div class="list" v-for="(item, index) in data" :key="index">操作人：<span>{{item.name}}</span> 操作行为： <span>{{item.action == 'change' ? '换一批' : '关&nbsp;&nbsp;&nbsp;闭'}}</span> 页面停留时长： <span>{{item.keeptime}}秒</span> 操作时间： <span>{{new Date(Number(item.time)).toLocaleString() }}</span> 提交用户数量： <span>{{item.userinfo.length}}</span> <span @mouseenter="showhide(index)" @mouseleave="hide()" class="click">▼</span><div v-if="show == index" @mouseenter="show = index" @mouseleave="show = -1" class="hide"><div><div>用户名</div><div class="userinfo" v-for="(item, index) in item.userinfo" :key="index" :class="input.trim() == item.userid ? 'searchid' : ''">{{item.username}}</div></div><div><div>用户ID</div><div class="userinfo" v-for="(item, index) in item.userinfo" :key="index" :class="input.trim() == item.userid ? 'searchid' : ''">{{item.userid}}</div></div><div><div>处罚记录</div><div class="userinfo" v-for="(item, index) in item.userinfo" :key="index">暂未开发</div></div></div></div></div><el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[50, 100, 150, 200]" :page-size="pagesize" layout="total, sizes, prev, pager, next, jumper" :total="refreshtime"></el-pagination></div><script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script><script src="https://unpkg.com/axios/dist/axios.min.js"></script><script src="https://unpkg.com/element-ui/lib/index.js"></script><script>Vue.prototype.$http = axios.create({
             baseURL: '/fuliaoLiveAuditRecord',
             timeout: 1234
         })
@@ -238,7 +45,7 @@
                     this.search(this.input.trim());
                     this.loading = true;
                     const that = this;
-                    this.$http.post('/fuliaoLiveAuditRecord/search', {
+                    this.$http.post('/search', {
                         params: {
                             name: that.value,
                             start: new Date(that.timevalue[0]).getTime(),
@@ -288,15 +95,11 @@
                     }).then((response) => {
                         this.loading = false;
                         this.data = response.data.data,
-                        this.refreshtime = response.data.refreshtime
+                            this.refreshtime = response.data.refreshtime
                     });
                 }
             },
             mounted() {
                 this.search()
             }
-        });
-    </script>
-</body>
-
-</html>
+        });</script></body></html>
