@@ -14,7 +14,7 @@
 </head>
 
 <body>
-    <video id="video" width="200" controls autoplay muted></video>
+    <!-- <video id="video" width="200" controls autoplay muted></video>
     <video id="videoElement" width="200" controls autoplay muted></video>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script src="https://cdn.bootcss.com/flv.js/1.5.0/flv.min.js"></script>
@@ -46,7 +46,41 @@
         flvPlayer.attachMediaElement(videoElement);
         flvPlayer.load();
         flvPlayer.play();
-    </script>
+    </script> -->
+    <!-- <div id="app">
+        {{name}}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        const vue = new Vue({
+            el: '#ap',
+            data: {
+                name: 'ycn'
+            },
+            beforeCreate () {
+                console.log('beforeCreate')
+            },
+            created () {
+                console.log('created')
+            },
+            beforeMount () {
+                console.log('beforeMount')
+            },
+            mounted () {
+                setTimeout(() => {
+                    this.name = 'yyyyyyy'
+                }, 1234)
+                console.log('mounted')
+            },
+            beforeUpdate () {
+                console.log('beforeUpdate')
+            },
+            updated () {
+                console.log('updated')
+            }
+        })
+        console.log(vue)
+    </script> -->
 </body>
 
 </html>
