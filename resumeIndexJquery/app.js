@@ -24,5 +24,8 @@ module.exports = (app) => {
 
     app.use(router.routes()).use(router.allowedMethods());
 
-    app.use(static('./resumeIndexJquery/'))
+    app.use(static('./resumeIndexJquery/', {
+        maxage: 60 * 60 * 1000
+    }))
+
 }
