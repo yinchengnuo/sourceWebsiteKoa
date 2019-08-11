@@ -1,4 +1,5 @@
 const Koa = require('koa');
+const cors = require('koa-cors');
 const compress = require('koa-compress');
 const bodyParser = require('koa-bodyparser');
 const connectMongodb = require('./util/connectMongodb');
@@ -13,7 +14,7 @@ const connectMongodb = require('./util/connectMongodb');
     console.log('数据库连接成功！！！')
 
     const app = new Koa();
-
+    app.use(cors());
     app.use(bodyParser()); //获取post请求体中间件
     app.use(compress({ threshold: 2048 })); //gzip中间件
 
