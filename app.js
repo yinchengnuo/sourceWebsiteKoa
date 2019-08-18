@@ -14,7 +14,7 @@ const connectMongodb = require('./util/connectMongodb');
     console.log('数据库连接成功！！！')
 
     const app = new Koa();
-    app.use(cors());
+    app.use(cors());  //开启跨域
     app.use(bodyParser()); //获取post请求体中间件
     app.use(compress({ threshold: 2048 })); //gzip中间件
 

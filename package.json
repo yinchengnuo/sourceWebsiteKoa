@@ -19,7 +19,8 @@
     "mongoose": "^5.6.0"
   },
   "devDependencies": {
-    "nodemailer": "^6.2.1"
+    "nodemailer": "^6.2.1",
+    "nodemon": "^1.19.1"
   },
   "description": ""
 }
