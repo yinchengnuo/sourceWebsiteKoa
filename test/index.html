@@ -14,6 +14,74 @@
 </head>
 
 <body>
+    <button id="login">登录</button>
+    <br>
+    <br>
+    <button id="other">其他操作</button>
+    <br>
+    <br>
+    <button id="logout">退出</button>
+    
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@yinchengnuo/webstorage-proxy@1.0.4/dist/webstorage-proxy.min.js"></script>
+    <script>
+
+        const custom = 'x-custom-header'
+        const storage = new WebStorageProxy('localStorage')
+        console.log(storage.all())
+
+        const $ajax = axios.create({
+            baseURL: 'http://localhost/test',
+            timeout: 1234
+        })
+
+        $ajax.interceptors.request.use(req => {
+            console.log(req.headers[custom] = storage[custom])
+            return req
+        }, err => {
+
+        })
+
+        // $ajax.interceptors.request.use(
+        // config => {
+        //     if (store.state.token) {
+        //     config.headers.authorization = store.state.token
+        //     }
+        //     return config
+        // },
+        // err => {
+        //     return Promise.reject(err)
+        // })
+
+        login.onclick = () => {
+            $ajax.post('/login', {
+                name: 'ycn',
+                pasw: 123
+            }).then(res => {
+                console.log(res.data)
+            })
+        }
+
+        other.onclick = () => {
+            $ajax.post('/other', {
+                name: 'ycn',
+                pasw: 123
+            }).then(res => {
+                console.log(res.data)                
+            })
+        }
+
+        logout.onclick = () => {
+            $ajax.post('/logout', {
+                name: 'ycn',
+                pasw: 123
+            }).then(res => {
+                console.log(res.data)                
+            })
+        }
+
+        // $http.get('/')
+    </script>
     <!-- <video id="video" width="200" controls autoplay muted></video>
     <video id="videoElement" width="200" controls autoplay muted></video>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
