@@ -18,7 +18,7 @@ const connectMongodb = require('./util/connectMongodb');
     app.use(bodyParser()); //获取post请求体中间件
     app.use(compress({ threshold: 2048 })); //gzip中间件
 
-    require('./util/proxy')(app); //代理接口
+    require('./util/api.js')(app); //api接口
     require('./resumeIndexJquery/app')(app); //主页简历
     require('./fuliaoLiveAuditRecord/app')(app); //富聊直播审核记录
     require('./fuliaoLiveWithoutFlash/app')(app); //富聊后台视频聊优化建议方案
