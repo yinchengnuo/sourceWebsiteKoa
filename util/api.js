@@ -2,7 +2,6 @@ const fs = require('fs');
 const util = require('util');
 const axios = require('axios');
 const router = require('koa-router')();
-const writeFilePromise = util.promisify(fs.writeFile);
 
 const host = 'https://api.96friend.cn';
 const query1 = 'apptype=6';
@@ -12,14 +11,6 @@ const query4 = 'pagesize=14'
 const query5 = 'cversion=29011505'
 
 module.exports = app => {
-
-    router.post('/kpdwbs', async ctx => {
-        await writeFilePromise('../dwbsMockNode/app.js', ctx.request.body.data)
-	ctx.body = {
-	    code: 200
-	}
-    })
-
 
     router.get('/tuijian', async ctx => {
         ctx.body = (await axios(`${host}/videoLive!getRecommendList.htm?${query1}&${query2}&${query3}&${query4}&${query5}&pageno=${ctx.query.page}&_timestamp=${Math.floor(+new Date() / 1000)}`)).data
